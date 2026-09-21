@@ -1,18 +1,19 @@
 #!/bin/sh
 set -e
 
-if [ ! -f .env]; then 
+if [ ! -f .env ]; then 
     cp .env.example .env
 fi
 
 php artisan key:generate --force --ansi || true
 
 echo "waiting for datatbase..."
-until php -r "new PDO('pgsql:hodt=${DB_PORT};dbname=${DB_DATABASE}', '${DB_USERNAME}', '${DB_PASSWORD}')" > /dev/null 2>&1; do
+
+until php -r "new PDO('pgsql:host=${DB_HOST}; port=${DB_PORT};dbname=${DB_DATABASE}', '${DB_USERNAME}', '${DB_PASSWORD}')" > /dev/null 2>&1; do
     sleep 1
 done
 
-ech0 "Database is up.";
+echo "Database is up.";
 
 php artisan migrate --force
 php artisan db:seed --force || true
